@@ -1,8 +1,52 @@
 # replicate smoking study
+#install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
 library(cmdstanr)
 library(data.table)
+library(dplyr)
+
+## Test setup of cmdstan ####
+# From https://mc-stan.org/cmdstanr/articles/cmdstanr.html
+check_cmdstan_toolchain(fix = TRUE, quiet = TRUE)
+library(posterior)
+library(bayesplot)
+color_scheme_set("brightblue")
+
+# install_cmdstan(cores = 2)
+# CmdStan path set to: /home/nealm@dexcel.co.nz/.cmdstan/cmdstan-2.32.2
+
+cmdstan_path()
+cmdstan_version()
+file <- file.path(cmdstan_path(), "examples", "bernoulli", "bernoulli.stan")
+mod <- cmdstan_model(file)
+mod$print()
+
+mod$exe_file()
+# names correspond to the data block in the Stan program
+data_list <- list(N = 10, y = c(0,1,0,0,0,0,0,0,0,1))
+
+fit <- mod$sample(
+  data = data_list, 
+  seed = 123, 
+  chains = 4, 
+  parallel_chains = 4,
+  refresh = 500 # print update every 500 iters
+)
+
+fit$summary()
+fit$summary(variables = c("theta", "lp__"), "mean", "sd")
+# use a formula to summarize arbitrary functions, e.g. Pr(theta <= 0.5)
+fit$summary("theta", pr_lt_half = ~ mean(. <= 0.5))
+
+
+# default is a 3-D draws_array object from the posterior package
+# iterations x chains x variables
+draws_arr <- fit$draws() # or format="array"
+str(draws_arr)
+
+## Return to example ####
 
 load("synth/smoking.rda")
+load("smoking.rda")
 
 # stan_file <- "synth_penalized.stan"
 stan_file <- "synth_horseshoe_b_tau_x.stan"
