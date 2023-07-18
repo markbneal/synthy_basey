@@ -108,3 +108,9 @@ fit_synth <- mod_synth$sample(data = stan_data,
                               max_treedepth = 13,
                               adapt_delta = 0.8
 )
+
+saveRDS(fit_synth, "fitted_synth_model.RDS") 
+
+results <- fit_synth$summary()
+
+saveRDS(results, "smoking results.RDS")

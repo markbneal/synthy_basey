@@ -6,6 +6,7 @@ https://discourse.mc-stan.org/t/paper-causal-inference-with-panel-data-by-pang-l
 
 Paper:
 https://discourse.mc-stan.org/uploads/short-url/1fSfL5YIhXmwQ5CzB5WB9iZ37zu.pdf
+(in this repo too)
 
 Main Script 
 smoking.r
